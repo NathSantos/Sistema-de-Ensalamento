@@ -1,11 +1,11 @@
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 public class Ensalamento {
 	ArrayList<Sala> salas = new ArrayList<Sala>();
 	ArrayList<Turma> turmas = new ArrayList<Turma>();
 	ArrayList<TurmaEmSala> ensalamento = new ArrayList<TurmaEmSala>();
+	static int acumulador = 0;
 	
 	public Ensalamento() {
 	}
@@ -64,6 +64,7 @@ public class Ensalamento {
 		if( (turma.acessivel == sala.acessivel) && (turma.numAlunos <= sala.capacidade) && (salaDisponivel(sala, turma.horarios) == true)) {
 			TurmaEmSala novaTurma = new TurmaEmSala(turma, sala);
 			ensalamento.add(novaTurma);
+			acumulador += sala.capacidade - turma.numAlunos;
 			return true;
 		}
 		return false;
@@ -75,7 +76,7 @@ public class Ensalamento {
 		
 		while(iteratorTurma.hasNext()) {	// vai alocar as turmas nas salas (um loop pra cada turma)
 			ArrayList<Sala> salasRestantes = new ArrayList<Sala>();
-			int numAlunosTurma = iteratorTurma.next().numAlunos;	// número de alunos da respectiva turma
+			int numAlunosTurma = iteratorTurma.next().numAlunos;	// nÃºmero de alunos da respectiva turma
 			
 			while(iteratorSala.hasNext()) {	// selecionando todas as salas que PODEM comportar tal turma (salasRestantes)
 				if((numAlunosTurma <= iteratorSala.next().capacidade) && (iteratorTurma.next().acessivel == iteratorSala.next().acessivel) && (salaDisponivel(iteratorSala.next(), iteratorTurma.next().horarios) == true)) {
@@ -111,14 +112,13 @@ public class Ensalamento {
 	}
 	
 	public int getTotalEspacoLivre() {
-		int acm = 0;
-		return acm;
+		return acumulador;
 	}
 	
 	public String relatorioResumoEnsalamento() {
 		String relatorioEnsalamento = "Total de Salas: " + salas.size() +
 				"\nTotal de Turmas: " + turmas.size() + "\nTurmas Alocadas: " +
-				getTotalTurmasAlocadas() + "\nEspaços Livres: " + getTotalEspacoLivre() + "\n";
+				getTotalTurmasAlocadas() + "\nEspaÃ§os Livres: " + getTotalEspacoLivre() + "\n";
 		return relatorioEnsalamento;
 	}
 	
@@ -154,11 +154,11 @@ public class Ensalamento {
 					relatorio += "Sala: " + iteratorEnsalamento.next().sala.getDescricao() + "\n";
 				}
 				else {
-					if((iteratorEnsalamento.next().turma == iteratorTurma.next()) && (iteratorEnsalamento.next().sala == null)) {
-						relatorio += "Sala: SEM SALA\n";
-					}
+					relatorio += "Sala: SEM SALA\n";
 				}
-			}		
+			}
+			
+			relatorio += "Sala: SEM SALA\n";
 		}	
 		return relatorio;
 	}
