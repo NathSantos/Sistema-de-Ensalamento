@@ -2,18 +2,15 @@
 public class EnsalamentoMain {
 
 	public static void main(String[] args) {
-		Sala s1 = new Sala(6, 101, 50, true);
-		Sala s2 = new Sala(6, 101, 50, false);
-		Turma t1 = new Turma("Algoritmos e Estrutura de Dados I","Edleno Silva",60,true);
-		
-		t1.addHorario(1);
-		t1.addHorario(15);
-		t1.addHorario(29);
-		
-		System.out.println(t1.getDescricao());
-		
-		System.out.println(s1.getDescricao());
-		System.out.println(s2.getDescricao());
+		Ensalamento e1 = new Ensalamento();
+		Sala s1 = new Sala(2, 102, 80, true);
+		e1.addSala(s1);
+		Turma t1 = new Turma("Organização de Computadores", "Andrew S. Tanenbaum", 70, true);
+		t1.addHorario(7);
+		t1.addHorario(21);
+		t1.addHorario(35);
+		e1.addTurma(t1);
+		System.out.println(e1.relatorioSalasPorTurma());
 
 	}
 

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public class Ensalamento {
@@ -69,7 +70,33 @@ public class Ensalamento {
 	}
 	
 	public void alocarTodas() {
+		Iterator<Sala> iteratorSala = salas.iterator();
+		Iterator<Turma> iteratorTurma = turmas.iterator();
 		
+		while(iteratorTurma.hasNext()) {	// vai alocar as turmas nas salas (um loop pra cada turma)
+			ArrayList<Sala> salasRestantes = new ArrayList<Sala>();
+			int numAlunosTurma = iteratorTurma.next().numAlunos;	// número de alunos da respectiva turma
+			
+			while(iteratorSala.hasNext()) {	// selecionando todas as salas que PODEM comportar tal turma (salasRestantes)
+				if((numAlunosTurma <= iteratorSala.next().capacidade) && (iteratorTurma.next().acessivel == iteratorSala.next().acessivel) && (salaDisponivel(iteratorSala.next(), iteratorTurma.next().horarios) == true)) {
+					salasRestantes.add(iteratorSala.next());
+				}
+			}
+			
+			Iterator<Sala> iteratorSalasRestante = salasRestantes.iterator();
+			int menorCapacidade = 1000;
+			Sala salaEscolhida = iteratorSalasRestante.next();
+			
+			while(iteratorSalasRestante.hasNext()) {	// dentre as salas que sobraram, qual a de menor capacidade (melhor sala para aquela turma)?
+				if(iteratorSalasRestante.next().capacidade <= menorCapacidade) {
+					menorCapacidade = iteratorSalasRestante.next().capacidade;
+					salaEscolhida = iteratorSalasRestante.next();
+				}
+			}
+			
+			alocar(iteratorTurma.next(), salaEscolhida);
+			
+		}
 	}
 	
 	public int getTotalTurmasAlocadas() {
@@ -83,14 +110,15 @@ public class Ensalamento {
 		return quant;
 	}
 	
-	public int TotalEspacoLivre() {
+	public int getTotalEspacoLivre() {
 		int acm = 0;
+		return acm;
 	}
 	
 	public String relatorioResumoEnsalamento() {
 		String relatorioEnsalamento = "Total de Salas: " + salas.size() +
 				"\nTotal de Turmas: " + turmas.size() + "\nTurmas Alocadas: " +
-				getTotalTurmasAlocadas() + "\nEspaços Livres: " + TotalEspacoLivre() + "\n";
+				getTotalTurmasAlocadas() + "\nEspaços Livres: " + getTotalEspacoLivre() + "\n";
 		return relatorioEnsalamento;
 	}
 	
