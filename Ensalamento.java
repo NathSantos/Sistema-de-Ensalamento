@@ -76,7 +76,7 @@ public class Ensalamento {
 		
 		while(iteratorTurma.hasNext()) {	// vai alocar as turmas nas salas (um loop pra cada turma)
 			ArrayList<Sala> salasRestantes = new ArrayList<Sala>();
-			int numAlunosTurma = iteratorTurma.next().numAlunos;	// nÃºmero de alunos da respectiva turma
+			int numAlunosTurma = iteratorTurma.next().numAlunos;	// número de alunos da respectiva turma
 			
 			while(iteratorSala.hasNext()) {	// selecionando todas as salas que PODEM comportar tal turma (salasRestantes)
 				if((numAlunosTurma <= iteratorSala.next().capacidade) && (iteratorTurma.next().acessivel == iteratorSala.next().acessivel) && (salaDisponivel(iteratorSala.next(), iteratorTurma.next().horarios) == true)) {
@@ -112,13 +112,16 @@ public class Ensalamento {
 	}
 	
 	public int getTotalEspacoLivre() {
+		if(ensalamento.size() == 0) {
+			return 0;
+		}
 		return acumulador;
 	}
 	
 	public String relatorioResumoEnsalamento() {
 		String relatorioEnsalamento = "Total de Salas: " + salas.size() +
 				"\nTotal de Turmas: " + turmas.size() + "\nTurmas Alocadas: " +
-				getTotalTurmasAlocadas() + "\nEspaÃ§os Livres: " + getTotalEspacoLivre() + "\n";
+				getTotalTurmasAlocadas() + "\nEspaços Livres: " + getTotalEspacoLivre() + "\n";
 		return relatorioEnsalamento;
 	}
 	
@@ -128,13 +131,14 @@ public class Ensalamento {
 		String relatorio = relatorioResumoEnsalamento();
 		
 		while(iteratorSala.hasNext()) {
-			relatorio += "\n--- " + iteratorSala.next().getDescricao() + " ---\n";
-			
+			Sala salaAux = iteratorSala.next();
+			relatorio += "\n--- " + salaAux.getDescricao() + " ---\n";
+
 			while(iteratorEnsalamento.hasNext()) {
-				
-				if(iteratorEnsalamento.next().sala == iteratorSala.next()) {
-					relatorio += "\n" + iteratorEnsalamento.next().turma.getDescricao() + "\n";
-				}				
+				TurmaEmSala turmaSalaAux = iteratorEnsalamento.next();
+				if(turmaSalaAux.sala.sala == salaAux.sala) {
+					relatorio += "\n" + turmaSalaAux.turma.getDescricao() + "\n";
+				}
 			}			
 		}	
 		return relatorio;
@@ -146,19 +150,23 @@ public class Ensalamento {
 		String relatorio = relatorioResumoEnsalamento();
 		
 		while(iteratorTurma.hasNext()) {
-			relatorio += "\n" + iteratorTurma.next().getDescricao() + "\n";
+			Turma turmaAux = iteratorTurma.next();
+			relatorio += "\n" + turmaAux.getDescricao() + "\n";
 			
-			while(iteratorEnsalamento.hasNext()) {
-				
-				if((iteratorEnsalamento.next().turma == iteratorTurma.next()) && (iteratorEnsalamento.next().sala != null)) {
-					relatorio += "Sala: " + iteratorEnsalamento.next().sala.getDescricao() + "\n";
-				}
-				else {
-					relatorio += "Sala: SEM SALA\n";
+			if(iteratorEnsalamento.hasNext()) {
+				while(iteratorEnsalamento.hasNext()) {	
+					TurmaEmSala turmaSalaAux = iteratorEnsalamento.next();
+					if((turmaSalaAux.turma == turmaAux) && (getSala(turmaSalaAux.turma) != null)) {
+						relatorio += "Sala: " + turmaSalaAux.sala.getDescricao() + "\n";
+					}
+					else {
+						relatorio += "Sala: SEM SALA\n";
+					}
 				}
 			}
-			
-			relatorio += "Sala: SEM SALA\n";
+			else {
+				relatorio += "Sala: SEM SALA\n";
+			}
 		}	
 		return relatorio;
 	}

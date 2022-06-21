@@ -18,10 +18,10 @@ public class Sala {
 	public String getDescricao() {
 		String descricaoSala = "Bloco " + bloco + ", Sala " + sala + " (" + capacidade + " lugares, ";
 		if(acessivel == true) {
-			descricaoSala += "acess√≠vel)";
+			descricaoSala += "acessÌvel)";
 		}
 		else {
-			descricaoSala += "n√£o acess√≠vel)";
+			descricaoSala += "n„o acessÌvel)";
 		}
 		return descricaoSala;
 	}
