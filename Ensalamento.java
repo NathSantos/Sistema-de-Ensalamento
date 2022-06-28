@@ -5,7 +5,6 @@ public class Ensalamento {
 	ArrayList<Sala> salas = new ArrayList<Sala>();
 	ArrayList<Turma> turmas = new ArrayList<Turma>();
 	ArrayList<TurmaEmSala> ensalamento = new ArrayList<TurmaEmSala>();
-	static int acumulador = 0;
 	
 	public Ensalamento() {
 	}
@@ -64,39 +63,49 @@ public class Ensalamento {
 		if( (turma.acessivel == sala.acessivel) && (turma.numAlunos <= sala.capacidade) && (salaDisponivel(sala, turma.horarios) == true)) {
 			TurmaEmSala novaTurma = new TurmaEmSala(turma, sala);
 			ensalamento.add(novaTurma);
-			acumulador += sala.capacidade - turma.numAlunos;
 			return true;
 		}
 		return false;
 	}
 	
 	public void alocarTodas() {
-		Iterator<Sala> iteratorSala = salas.iterator();
 		Iterator<Turma> iteratorTurma = turmas.iterator();
 		
 		while(iteratorTurma.hasNext()) {	// vai alocar as turmas nas salas (um loop pra cada turma)
+			Iterator<Sala> iteratorSala = salas.iterator();
 			ArrayList<Sala> salasRestantes = new ArrayList<Sala>();
-			int numAlunosTurma = iteratorTurma.next().numAlunos;	// número de alunos da respectiva turma
+			Turma turmaAux = iteratorTurma.next();
 			
 			while(iteratorSala.hasNext()) {	// selecionando todas as salas que PODEM comportar tal turma (salasRestantes)
-				if((numAlunosTurma <= iteratorSala.next().capacidade) && (iteratorTurma.next().acessivel == iteratorSala.next().acessivel) && (salaDisponivel(iteratorSala.next(), iteratorTurma.next().horarios) == true)) {
-					salasRestantes.add(iteratorSala.next());
+				Sala salaAux = iteratorSala.next();
+				
+				if((turmaAux.numAlunos <= salaAux.capacidade) && (turmaAux.acessivel == salaAux.acessivel) && (salaDisponivel(salaAux, turmaAux.horarios) == true)) {
+					salasRestantes.add(salaAux);
 				}
 			}
 			
-			Iterator<Sala> iteratorSalasRestante = salasRestantes.iterator();
-			int menorCapacidade = 1000;
-			Sala salaEscolhida = iteratorSalasRestante.next();
 			
-			while(iteratorSalasRestante.hasNext()) {	// dentre as salas que sobraram, qual a de menor capacidade (melhor sala para aquela turma)?
-				if(iteratorSalasRestante.next().capacidade <= menorCapacidade) {
-					menorCapacidade = iteratorSalasRestante.next().capacidade;
-					salaEscolhida = iteratorSalasRestante.next();
+			if(salasRestantes.size() > 0) {	// se tiver pelo menos 1 sala para a turma ser alocada....
+				Iterator<Sala> iteratorSalasRestante = salasRestantes.iterator();
+				int menorCapacidade = 1000;
+				Sala salaEscolhida = null; 
+				
+				while(iteratorSalasRestante.hasNext()) {	// dentre as salas que sobraram, qual a de menor capacidade (melhor sala para aquela turma)?
+					Sala salaRestante = iteratorSalasRestante.next();
+					
+					if(salaRestante.capacidade <= menorCapacidade) {
+						menorCapacidade = salaRestante.capacidade;
+						salaEscolhida = salaRestante;
+					}
 				}
+				
+				alocar(turmaAux, salaEscolhida);
+				
 			}
 			
-			alocar(iteratorTurma.next(), salaEscolhida);
-			
+			for(int i=0;i<salasRestantes.size();i++) {
+				salasRestantes.remove(i);
+			}
 		}
 	}
 	
@@ -112,9 +121,14 @@ public class Ensalamento {
 	}
 	
 	public int getTotalEspacoLivre() {
-		if(ensalamento.size() == 0) {
-			return 0;
+		Iterator<TurmaEmSala> iterator = ensalamento.iterator();
+		int acumulador = 0;
+		
+		while(iterator.hasNext()) {
+			TurmaEmSala turmaSalaAux = iterator.next();
+			acumulador += turmaSalaAux.sala.capacidade - turmaSalaAux.turma.numAlunos;
 		}
+
 		return acumulador;
 	}
 	
